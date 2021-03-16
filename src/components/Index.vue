@@ -5,7 +5,7 @@
         {{ searchString }}
       </div>
       <v-row>
-        <v-col v-for="album in retrievedInfo" :key="album.albumName" cols="4">
+        <v-col v-for="album in visibleCards" :key="album.albumName" cols="4">
           <v-card height="150">
             <v-list-item three-line>
               <v-list-item-avatar tile size="120" color="grey" >
@@ -30,6 +30,14 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-pagination
+        v-if="validateRetrivedInfo()"
+        v-model="page"
+        :length="calculatePages()"
+        class="my-4"
+        @next="updateNext()"
+        @previous="updatePrevious()"
+      ></v-pagination>
     </v-container>
   </div>
 </template>
@@ -38,6 +46,12 @@
 export default {
   name: "Index",
   components: {},
+  mounted() {
+    this.visibleCards = this.retrievedInfo.slice(
+      this.page - 1,
+      this.page - 1 + this.pageSize
+    );
+  },
   data() {
     return {
       retrievedInfo: [
@@ -181,7 +195,10 @@ export default {
           artistName: "b",
           price: "c",
         },
-      ]
+      ],
+      page: 1,
+      pageSize: 9,
+      visibleCards: [],
     };
   },
   props: {
@@ -198,7 +215,32 @@ export default {
       } else {
         return true;
       }
-    }
+    },
+    calculatePages() {
+      if (this.validateRetrivedInfo()) {
+        if (this.retrievedInfo.length % this.pageSize === 0) {
+          return this.retrievedInfo.length / this.pageSize;
+        } else {
+          return Math.floor(this.retrievedInfo.length / this.pageSize) + 1;
+        }
+      }
+    },
+    updateNext() {
+      this.visibleCards = [];
+      this.currentPage = this.currentPage + this.pageSize;
+      this.visibleCards = this.retrievedInfo.slice(
+        (this.page - 1) * this.pageSize,
+        (this.page - 1) * this.pageSize + this.pageSize
+      );
+    },
+    updatePrevious() {
+      this.visibleCards = [];
+      this.currentPage = this.currentPage - this.pageSize;
+      this.visibleCards = this.retrievedInfo.slice(
+        (this.page - 1) * this.pageSize,
+        (this.page - 1) * this.pageSize + this.pageSize
+      );
+    },
   },
 };
 </script>
