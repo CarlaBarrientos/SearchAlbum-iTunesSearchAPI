@@ -1,6 +1,9 @@
 <template>
   <div class="index">
     <v-container class="pa-10">
+      <div>
+        {{ searchString }}
+      </div>
     </v-container>
   </div>
 </template>
@@ -10,10 +13,13 @@ export default {
   name: "Index",
   components: {},
   data() {
-    return {
-      searchString: ""
-      //categories: ["All", "Books", "Magazines", "Newspapers", "Others"]
-    };
+    return {};
+  },
+  props: {
+    searchString: {
+      type: String,
+      default: ""
+    }
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar 
+    <v-app-bar
       app
       style="background: linear-gradient(to right, #ff5f77, #ac72e6, #09c6ff)"
     >
@@ -13,7 +13,9 @@
           width="40"
         />
       </div>
-      <v-app-bar-title class="white--text font-italic"> Search Albums on iTunes </v-app-bar-title>
+      <v-app-bar-title class="white--text font-italic">
+        Search Albums on iTunes
+      </v-app-bar-title>
       <v-spacer></v-spacer>
       <v-text-field
         class="pa-2"
@@ -25,13 +27,13 @@
         hide-details
         color="#eeeeee"
       ></v-text-field>
-      <v-btn fab small color="#eeeeee">
+      <v-btn fab small color="#eeeeee" @click="sendProperty(search)">
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
     </v-app-bar>
 
     <v-main>
-      <Index />
+      <Index :searchString="getSearchString()" />
     </v-main>
   </v-app>
 </template>
@@ -47,10 +49,26 @@ export default {
   },
 
   data: () => ({
-    search: "",
     images: {
       sample: require("./assets/iTunesLogo.png")
+    },
+    search: "",
+    sendArgument: "",
+    currentState: false
+  }),
+
+  methods: {
+    getSearchString() {
+      console.log(this.sendArgumentv);
+      return this.sendArgument;
+    },
+    sendProperty(searchItem) {
+      if (searchItem === "") {
+        alert("You must type something in the search text field! :)");
+      } else {
+        this.sendArgument = searchItem;
+      }
     }
-  })
+  }
 };
 </script>
