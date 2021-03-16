@@ -13,7 +13,7 @@
           width="40"
         />
       </div>
-      <v-app-bar-title class="white--text font-italic">
+      <v-app-bar-title class="white--text font-italic" id="app-bar-title">
         Search Albums on iTunes
       </v-app-bar-title>
       <v-spacer></v-spacer>
