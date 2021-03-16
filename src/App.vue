@@ -59,7 +59,6 @@ export default {
 
   methods: {
     getSearchString() {
-      console.log(this.sendArgumentv);
       return this.sendArgument;
     },
     sendProperty(searchItem) {
