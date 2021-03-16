@@ -1,56 +1,56 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar 
+      app
+      style="background: linear-gradient(to right, #ff5f77, #ac72e6, #09c6ff)"
+    >
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
           class="shrink mr-2"
           contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          :src="images.sample"
           transition="scale-transition"
           width="40"
         />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
       </div>
-
+      <v-app-bar-title class="white--text font-italic"> Search Albums on iTunes </v-app-bar-title>
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+      <v-text-field
+        class="pa-2"
+        v-model="search"
+        label="Search by Artist/Group Name"
+        outlined
+        rounded
+        dense
+        hide-details
+        color="#eeeeee"
+      ></v-text-field>
+      <v-btn fab small color="#eeeeee">
+        <v-icon>mdi-magnify</v-icon>
       </v-btn>
     </v-app-bar>
 
     <v-main>
-      <HelloWorld />
+      <Index />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import Index from "./components/Index";
 
 export default {
   name: "App",
 
   components: {
-    HelloWorld
+    Index
   },
 
   data: () => ({
-    //
+    search: "",
+    images: {
+      sample: require("./assets/iTunesLogo.png")
+    }
   })
 };
 </script>
