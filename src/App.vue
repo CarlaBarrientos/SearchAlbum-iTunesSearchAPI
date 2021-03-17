@@ -27,34 +27,40 @@
         hide-details
         color="#eeeeee"
       ></v-text-field>
-      <v-btn fab small color="#eeeeee" @click="sendProperty(search)">
+      <router-link v-if="search"
+                :to="{
+                  name: 'Index',
+                  params: { searchTerm: search }
+                }"
+              >
+      <v-btn fab small color="#eeeeee">
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
+      </router-link>
     </v-app-bar>
 
-    <v-main>
+    <!--v-main>
       <Index :searchString="getSearchString()" />
+    </v-main-->
+    <v-main>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Index from "./components/Index";
+import router from "@/router/index.js";
 
 export default {
   name: "App",
-
-  components: {
-    Index
-  },
+  router,
 
   data: () => ({
     images: {
       sample: require("./assets/iTunesLogo.png")
     },
     search: "",
-    sendArgument: "",
-    currentState: false
+    sendArgument: ""
   }),
 
   methods: {

@@ -2,16 +2,16 @@
   <div class="index">
     <v-container class="pa-10">
       <v-row>
-        <v-col v-for="album in visibleCards" :key="album.albumName" cols="4">
+        <v-col v-for="album in visibleCards" :key="album.collectionName" cols="4">
           <v-card height="150">
             <v-list-item three-line>
               <v-list-item-avatar tile size="120" color="grey">
-                <v-img :src="album.imgCover"></v-img>
+                <v-img :src="album.artworkUrl100"></v-img>
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title class="headline">
                 <v-icon> mdi-album </v-icon>
-                  {{ album.albumName }}
+                  {{ album.collectionName }}
                 </v-list-item-title>
                 <v-divider></v-divider>
                 <v-list-item-subtitle>
@@ -20,7 +20,7 @@
                 </v-list-item-subtitle>
                 <v-list-item-subtitle>
                   <v-icon> mdi-currency-usd </v-icon>
-                  {{ album.price }}
+                  {{ album.collectionPrice }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -28,7 +28,7 @@
         </v-col>
       </v-row>
       <v-pagination
-        v-if="validateRetrivedInfo()"
+        v-if="retrivedInfoNotEmpty()"
         v-model="page"
         :length="calculatePages()"
         class="my-4"
@@ -40,40 +40,70 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: "Index",
   components: {},
   mounted() {
-    this.visibleCards = this.retrievedInfo.slice(
+    this.searchString = this._getString();
+    if(this.searchStringNotEmpty()) {
+    this.term = this.convertString(this.searchString);
+    axios.get(`https://itunes.apple.com/search?term=${this.term}&media=${this.media}&entity=${this.entity}`)
+    .then(response => {
+      this.retrievedInfo = response.data.results;
+      this.readElements();
+      this.visibleCards = this.retrievedInfo.slice(
       this.page - 1,
       this.page - 1 + this.pageSize
     );
+
+    })
+    .catch(e => {
+      console.log(e);
+    })
+    }
   },
   data() {
     return {
       retrievedInfo: [],
       page: 1,
       pageSize: 9,
-      visibleCards: []
+      visibleCards: [],
+      entity: "album",
+      media: "music",
+      term: "",
+      searchString: ""
     };
-  },
-  props: {
-    searchString: {
-      type: String,
-      default: ""
-    }
   },
   computed: {},
   methods: {
-    validateRetrivedInfo() {
+     _getString() {
+      return this.$route.params.searchTerm;
+    },
+    readElements() {
+        console.log(this.retrievedInfo);
+    },
+    searchStringNotEmpty() {
+      if(this.searchString !== "") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    retrivedInfoNotEmpty() {
       if (this.retrievedInfo.length === 0) {
         return false;
       } else {
         return true;
       }
     },
+    convertString(searchString) {
+      let newString = searchString.toLowerCase();
+      newString = newString.replace(/ /g,"+");
+      return newString;
+    },
     calculatePages() {
-      if (this.validateRetrivedInfo()) {
+      if (this.retrivedInfoNotEmpty()) {
         if (this.retrievedInfo.length % this.pageSize === 0) {
           return this.retrievedInfo.length / this.pageSize;
         } else {

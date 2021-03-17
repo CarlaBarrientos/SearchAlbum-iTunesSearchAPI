@@ -50,12 +50,12 @@ describe("Index.vue tests", () => {
         let retrievedData = wrapper.vm.retrievedInfo;
         let initialLength = retrievedData.length;
         assert.equal(initialLength,0);
-        assert.equal(wrapper.vm.validateRetrivedInfo(), false);
+        assert.equal(wrapper.vm.retrivedInfoNotEmpty(), false);
 
         wrapper.vm.retrievedInfo = data.albums;
         retrievedData = wrapper.vm.retrievedInfo;
         let finalLength = retrievedData.length;
         assert.equal(finalLength,20);
-        assert.equal(wrapper.vm.validateRetrivedInfo(), true);
+        assert.equal(wrapper.vm.retrivedInfoNotEmpty(), true);
     })
 });
