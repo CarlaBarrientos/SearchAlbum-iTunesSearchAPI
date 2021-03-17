@@ -1,8 +1,16 @@
 <template>
   <div class="index">
     <v-container class="pa-10">
-      <v-row>
-        <v-col v-for="album in visibleCards" :key="album.collectionName" cols="4">
+      <p v-if="load">
+        Loading...
+        <v-progress-linear
+          color="#ac72e6"
+          :value="value"
+          stream
+        ></v-progress-linear>
+      </p>
+      <v-row v-else>
+        <v-col v-for="album in visibleCards" :key="album.collectionId" cols="4">
           <v-card height="150">
             <v-list-item three-line>
               <v-list-item-avatar tile size="120" color="grey">
@@ -10,7 +18,7 @@
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title class="headline">
-                <v-icon> mdi-album </v-icon>
+                  <v-icon> mdi-album </v-icon>
                   {{ album.collectionName }}
                 </v-list-item-title>
                 <v-divider></v-divider>
@@ -28,7 +36,7 @@
         </v-col>
       </v-row>
       <v-pagination
-        v-if="retrivedInfoNotEmpty()"
+        v-if="retrievedInfoNotEmpty()"
         v-model="page"
         :length="calculatePages()"
         class="my-4"
@@ -40,70 +48,54 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
   name: "Index",
   components: {},
-  mounted() {
-    this.searchString = this._getString();
-    if(this.searchStringNotEmpty()) {
-    this.term = this.convertString(this.searchString);
-    axios.get(`https://itunes.apple.com/search?term=${this.term}&media=${this.media}&entity=${this.entity}`)
-    .then(response => {
-      this.retrievedInfo = response.data.results;
-      this.readElements();
-      this.visibleCards = this.retrievedInfo.slice(
-      this.page - 1,
-      this.page - 1 + this.pageSize
-    );
-
-    })
-    .catch(e => {
-      console.log(e);
-    })
-    }
+  created() {
+    this.getApiData();
   },
   data() {
     return {
       retrievedInfo: [],
+      visibleCards: [],
       page: 1,
       pageSize: 9,
-      visibleCards: [],
       entity: "album",
       media: "music",
       term: "",
-      searchString: ""
+      load: false,
+      value: 10
     };
   },
-  computed: {},
-  methods: {
-     _getString() {
+  computed: {
+    searchString() {
       return this.$route.params.searchTerm;
     },
-    readElements() {
-        console.log(this.retrievedInfo);
+  },
+  watch: {
+    searchString() {
+      this.getApiData();
     },
-    searchStringNotEmpty() {
-      if(this.searchString !== "") {
+  },
+  methods: {
+    _getString() {
+      return this.$route.params.searchTerm;
+    },
+    retrievedInfoNotEmpty() {
+      if (this.retrievedInfo.length > 0) {
         return true;
       } else {
         return false;
-      }
-    },
-    retrivedInfoNotEmpty() {
-      if (this.retrievedInfo.length === 0) {
-        return false;
-      } else {
-        return true;
       }
     },
     convertString(searchString) {
       let newString = searchString.toLowerCase();
-      newString = newString.replace(/ /g,"+");
+      newString = newString.replace(/ /g, "+");
       return newString;
     },
     calculatePages() {
-      if (this.retrivedInfoNotEmpty()) {
+      if (this.retrievedInfoNotEmpty()) {
         if (this.retrievedInfo.length % this.pageSize === 0) {
           return this.retrievedInfo.length / this.pageSize;
         } else {
@@ -126,7 +118,43 @@ export default {
         (this.page - 1) * this.pageSize,
         (this.page - 1) * this.pageSize + this.pageSize
       );
-    }
-  }
+    },
+    async getApiData() {
+      this.value = 50;
+      this.load = true;
+      this.term = this.convertString(this.searchString);
+
+      await axios
+        .get(
+          `https://itunes.apple.com/search?term=${this.term}&media=${this.media}&entity=${this.entity}`
+        )
+        .then((response) => {
+          this.retrievedInfo = response.data.results;
+          if (this.retrievedInfoNotEmpty()) {
+            this.visibleCards = this.retrievedInfo.slice(
+              this.page - 1,
+              this.page - 1 + this.pageSize
+            );
+          } else {
+            this.visibleCards = [];
+            alert(
+              `Lo sentimos, no existen datos sobre ${this.searchString} :(`
+            );
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          if (this.visibleCards.length === 0) {
+            this.value = 0;
+            this.load = true;
+          } else {
+            this.value = 100;
+            this.load = false;
+          }
+        });
+    },
+  },
 };
 </script>

@@ -30,7 +30,7 @@
       <router-link v-if="search"
                 :to="{
                   name: 'Index',
-                  params: { searchTerm: search }
+                  params: { searchTerm: sendArgument }
                 }"
               >
       <v-btn fab small color="#eeeeee">
@@ -38,10 +38,6 @@
       </v-btn>
       </router-link>
     </v-app-bar>
-
-    <!--v-main>
-      <Index :searchString="getSearchString()" />
-    </v-main-->
     <v-main>
       <router-view />
     </v-main>
@@ -59,21 +55,15 @@ export default {
     images: {
       sample: require("./assets/iTunesLogo.png")
     },
-    search: "",
-    sendArgument: ""
+    search: ""
   }),
 
-  methods: {
-    getSearchString() {
-      return this.sendArgument;
-    },
-    sendProperty(searchItem) {
-      if (searchItem === "") {
-        alert("You must type something in the search text field! :)");
-      } else {
-        this.sendArgument = searchItem;
-      }
+  computed: {
+    sendArgument() {
+        return this.search;
     }
-  }
+  },
+
+  methods: { }
 };
 </script>
