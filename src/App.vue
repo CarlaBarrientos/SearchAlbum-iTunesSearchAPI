@@ -1,56 +1,69 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar
+      app
+      style="background: linear-gradient(to right, #ff5f77, #ac72e6, #09c6ff)"
+    >
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
           class="shrink mr-2"
           contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          :src="images.sample"
           transition="scale-transition"
           width="40"
         />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
       </div>
-
+      <v-app-bar-title class="white--text font-italic" id="app-bar-title">
+        Search Albums on iTunes
+      </v-app-bar-title>
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+      <v-text-field
+        class="pa-2"
+        v-model="search"
+        label="Search by Artist/Group Name"
+        outlined
+        rounded
+        dense
+        hide-details
+        color="#eeeeee"
+      ></v-text-field>
+      <router-link v-if="search"
+                :to="{
+                  name: 'Index',
+                  params: { searchTerm: sendArgument }
+                }"
+              >
+      <v-btn fab small color="#eeeeee">
+        <v-icon>mdi-magnify</v-icon>
       </v-btn>
+      </router-link>
     </v-app-bar>
-
     <v-main>
-      <HelloWorld />
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import router from "@/router/index.js";
 
 export default {
   name: "App",
-
-  components: {
-    HelloWorld
-  },
+  router,
 
   data: () => ({
-    //
-  })
+    images: {
+      sample: require("./assets/iTunesLogo.png")
+    },
+    search: ""
+  }),
+
+  computed: {
+    sendArgument() {
+        return this.search;
+    }
+  },
+
+  methods: { }
 };
 </script>
